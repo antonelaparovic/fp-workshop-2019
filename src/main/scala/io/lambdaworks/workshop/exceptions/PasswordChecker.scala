@@ -1,21 +1,29 @@
 package io.lambdaworks.workshop.exceptions
 
+import java.lang
+
+import scala.runtime.Nothing$
 import scala.util.matching.Regex
 
 object PasswordChecker {
 
   def validate(password: String): Either[List[Throwable], String] = {
-    val res0    = minNumberOfChars(password, 5)
-    val res1    = containsLowerCase(password)
-    val res2    = containsUpperCase(password)
-    val res3    = containsNumber(password)
-    val resList = List()
-    if (res0.isLeft) resList :+ res0
-    if (res1.isLeft) resList :+ res1
-    if (res2.isLeft) res2 :: resList
-    if (res3.isLeft) res3 :: resList
 
-    if (resList.nonEmpty) Left(resList)
+    def validateLoop(resList: List[Either[Throwable, String]],
+                     acc: List[Throwable] = Nil): List[Throwable] =
+      resList match {
+        case x :: xs if x.isLeft  => validateLoop(xs, x :: acc)
+        case x :: xs if x.isRight => validateLoop(xs, acc)
+        case Nil                  => acc
+      }
+
+    val res0 = validateLoop(
+      List(minNumberOfChars(password, 5),
+           containsLowerCase(password),
+           containsUpperCase(password),
+           containsNumber(password)))
+
+    if (res0.nonEmpty) Left(res0)
     else Right(password)
   }
 

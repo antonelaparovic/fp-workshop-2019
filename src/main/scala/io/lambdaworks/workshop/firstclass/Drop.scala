@@ -7,8 +7,7 @@ object Drop {
     * Implementation should pass suite DropFCFSpec
     */
   def dropIf[A](elements: List[A], p: A => Boolean): List[A] = {
-    val res = elements
-    res.filter(x => !p(x))
+    elements.filter(x => !p(x))
   }
 
 }
