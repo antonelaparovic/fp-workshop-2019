@@ -5,17 +5,17 @@ import scala.util.matching.Regex
 object PasswordChecker {
 
   def validate(password: String): Either[List[Throwable], String] = {
-    val res0  = minNumberOfChars(password, 5)
-    val res1  = containsLowerCase(password)
-    val res2  = containsUpperCase(password)
-    val res3  = containsNumber(password)
-    val lista = List()
-    if (res0.isLeft) lista :+ res0
-    if (res1.isLeft) lista :+ res1
-    if (res2.isLeft) res2 :: lista
-    if (res3.isLeft) res3 :: lista
+    val res0    = minNumberOfChars(password, 5)
+    val res1    = containsLowerCase(password)
+    val res2    = containsUpperCase(password)
+    val res3    = containsNumber(password)
+    val resList = List()
+    if (res0.isLeft) resList :+ res0
+    if (res1.isLeft) resList :+ res1
+    if (res2.isLeft) res2 :: resList
+    if (res3.isLeft) res3 :: resList
 
-    if (lista.nonEmpty) Left(lista)
+    if (resList.nonEmpty) Left(resList)
     else Right(password)
   }
 
