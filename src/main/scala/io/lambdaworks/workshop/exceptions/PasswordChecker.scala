@@ -1,11 +1,10 @@
 package io.lambdaworks.workshop.exceptions
 
-import java.lang
-
-import scala.runtime.Nothing$
 import scala.util.matching.Regex
 
 object PasswordChecker {
+
+  val numberPattern: Regex = "[0-9]".r
 
   def validate(password: String): Either[List[Throwable], String] = {
 
@@ -43,7 +42,6 @@ object PasswordChecker {
   }
 
   private def containsNumber(password: String): Either[Throwable, String] = {
-    val numberPattern: Regex = "[0-9]".r
     numberPattern.findFirstMatchIn(password) match {
       case Some(_) => Right(password)
       case None    => Left(MissingNumber)
