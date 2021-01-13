@@ -4,14 +4,15 @@ import scala.util.matching.Regex
 
 object PasswordChecker {
 
-  val numberPattern: Regex = "[0-9]".r
-  val upperPattern: Regex  = "[A-Z]".r
-  val lowerPattern: Regex  = "[a-z]".r
+  val NumberPattern: Regex = "[0-9]".r
+  val UpperPattern: Regex  = "[A-Z]".r
+  val LowerPattern: Regex  = "[a-z]".r
+  val MinimalLength: Int   = 5;
 
   def validate(password: String): Either[List[Throwable], String] = {
 
     val validators =
-      List(minNumberOfChars(password, 5),
+      List(minNumberOfChars(password, MinimalLength),
            containsLowerCase(password),
            containsUpperCase(password),
            containsNumber(password))
@@ -28,21 +29,21 @@ object PasswordChecker {
   }
 
   private def containsUpperCase(password: String): Either[Throwable, String] = {
-    upperPattern.findFirstMatchIn(password) match {
+    UpperPattern.findFirstMatchIn(password) match {
       case Some(_) => Right(password)
       case None    => Left(MissingUppercase)
     }
   }
 
   private def containsLowerCase(password: String): Either[Throwable, String] = {
-    lowerPattern.findFirstMatchIn(password) match {
+    LowerPattern.findFirstMatchIn(password) match {
       case Some(_) => Right(password)
       case None    => Left(MissingLowercase)
     }
   }
 
   private def containsNumber(password: String): Either[Throwable, String] = {
-    numberPattern.findFirstMatchIn(password) match {
+    NumberPattern.findFirstMatchIn(password) match {
       case Some(_) => Right(password)
       case None    => Left(MissingNumber)
     }
