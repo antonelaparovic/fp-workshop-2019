@@ -5,25 +5,21 @@ import scala.util.matching.Regex
 object PasswordChecker {
 
   val numberPattern: Regex = "[0-9]".r
+  val upperPattern: Regex  = "[A-Z]".r
+  val lowerPattern: Regex  = "[a-z]".r
 
   def validate(password: String): Either[List[Throwable], String] = {
 
-    def validateLoop(resList: List[Either[Throwable, String]],
-                     acc: List[Throwable] = Nil): List[Throwable] =
-      resList match {
-        case x :: xs if x.isLeft  => validateLoop(xs, x :: acc)
-        case x :: xs if x.isRight => validateLoop(xs, acc)
-        case Nil                  => acc
-      }
-
-    val res0 = validateLoop(
+    val validators =
       List(minNumberOfChars(password, 5),
            containsLowerCase(password),
            containsUpperCase(password),
-           containsNumber(password)))
+           containsNumber(password))
 
-    if (res0.nonEmpty) Left(res0)
-    else Right(password)
+    val res: Either[List[Throwable], String] = Left(validators.collect { case Left(x) => x })
+
+    if (validators.forall(_.isRight)) Right(password)
+    else res
   }
 
   private def minNumberOfChars(password: String, length: Int): Either[Throwable, String] = {
@@ -32,13 +28,17 @@ object PasswordChecker {
   }
 
   private def containsUpperCase(password: String): Either[Throwable, String] = {
-    if (password.compareTo(password.toLowerCase) == 1) Left(MissingUppercase)
-    else Right(password)
+    upperPattern.findFirstMatchIn(password) match {
+      case Some(_) => Right(password)
+      case None    => Left(MissingUppercase)
+    }
   }
 
   private def containsLowerCase(password: String): Either[Throwable, String] = {
-    if (password.compareTo(password.toUpperCase) == 1) Left(MissingLowercase)
-    else Right(password)
+    lowerPattern.findFirstMatchIn(password) match {
+      case Some(_) => Right(password)
+      case None    => Left(MissingLowercase)
+    }
   }
 
   private def containsNumber(password: String): Either[Throwable, String] = {
